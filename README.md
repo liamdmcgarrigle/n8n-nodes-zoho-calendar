@@ -5,6 +5,7 @@
 - [Table of Contents](#table-of-contents)
 - [Overview of Community Zoho Calendar n8n Node](#overview-of-community-zoho-calendar-n8n-node)
 - [If you want a custom node](#if-you-want-a-custom-node)
+- [Bugs/Contributing/Feature Request](#bugscontributingfeature-request)
 - [Documentation](#documentation)
 	- [How to install](#how-to-install)
 	- [Set Up Credentials](#set-up-credentials)
@@ -19,7 +20,6 @@
 		- [Get Attachment Details](#get-attachment-details)
 		- [Delete Attachment](#delete-attachment)
 		- [Get Attendees Details](#get-attendees-details)
-- [Bugs/Contributing/Feature Request](#bugscontributingfeature-request)
 
 # Overview of Community Zoho Calendar n8n Node
 I created this node because an organization I am affiliated with uses Zoho software and I would like to make it easier for our users to automate with n8n.  \
@@ -31,6 +31,12 @@ I will focus more on the documentation and readme after I am finished making the
 # If you want a custom node
 Please reach out to me using the info on [my GitHub page](https://github.com/liamdmcgarrigle).  \
 Nodes can be built for the community as well as privately just for one organization.
+
+# Bugs/Contributing/Feature Request
+
+If you have a bug to report or a feature request, please [submit a GitHub issue](https://github.com/liamdmcgarrigle/n8n-nodes-zoho-calendar/issues/new) with as much detail as you're able to give.
+
+Feel free to submit PRs, but please get in touch with me first to make sure I am willing to add the feature before you spend the time on it.
 
 # Documentation
 
@@ -79,11 +85,4 @@ Add a link here to a template showing how to do this using a custom loop
 ### Delete Attachment
 
 ### Get Attendees Details
-
-
-# Bugs/Contributing/Feature Request
-
-If you have a bug to report or a feature request, please [submit a GitHub issue](https://github.com/liamdmcgarrigle/n8n-nodes-zoho-calendar/issues/new) with as much detail as you're able to give.
-
-Feel free to submit PRs, but please get in touch with me first to make sure I am willing to add the feature before you spend the time on it.
 
