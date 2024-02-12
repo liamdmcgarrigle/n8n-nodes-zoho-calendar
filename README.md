@@ -23,7 +23,7 @@
 
 # Overview of Community Zoho Calendar n8n Node
 I created this node because an organization I am affiliated with uses Zoho software and I would like to make it easier for our users to automate with n8n.  \
-Also, many of my clients use Zoho products, so making a suit of Zoho nodes will help get them aboard the n8n train! Choo chooooo 🚂
+Also, many of my clients use Zoho products, so making a suite of Zoho nodes will help get them aboard the n8n train! Choo chooooo 🚂
 
 
 I will focus more on the documentation and readme after I am finished making the functionality of the actual node.
