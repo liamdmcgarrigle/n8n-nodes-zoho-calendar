@@ -1,4 +1,4 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+![Banner image](/ReadMeFiles/zohoCalNodeBanner.png)
 
 
 # Table of Contents
@@ -7,7 +7,18 @@
 - [If you want a custom node](#if-you-want-a-custom-node)
 - [Documentation](#documentation)
 	- [How to install](#how-to-install)
-	- [Create a New Credential in n8n](#create-a-new-credential-in-n8n)
+	- [Set Up Credentials](#set-up-credentials)
+	- [Event Actions](#event-actions)
+		- [Create an event](#create-an-event)
+			- [Create an event with an unknown number of attendees](#create-an-event-with-an-unknown-number-of-attendees)
+		- [Move Event](#move-event)
+		- [Delete Event](#delete-event)
+		- [Update Event](#update-event)
+		- [Get Events List](#get-events-list)
+		- [Get Events Details](#get-events-details)
+		- [Get Attachment Details](#get-attachment-details)
+		- [Delete Attachment](#delete-attachment)
+		- [Get Attendees Details](#get-attendees-details)
 - [Bugs/Contributing/Feature Request](#bugscontributingfeature-request)
 
 # Overview of Community Zoho Calendar n8n Node
@@ -28,7 +39,7 @@ Currently, this node is under development and only possible to run in a developm
 
 I will update this when it is published on npm and ready to use!
 
-## Create a New Credential in n8n 
+## Set Up Credentials
 
 1. Go to create a new credential in n8n
 It is named "Zoho Calendar OAuth2 API"
@@ -45,6 +56,30 @@ Then press the "Create" button
 3. Copy and Paste your client and secret ID into n8n's credential page
    
 4. Press the Connect My Account button and agree to the popup
+
+## Event Actions
+
+### Create an event
+
+#### Create an event with an unknown number of attendees
+Add a link here to a template showing how to do this using a custom loop
+
+### Move Event
+
+### Delete Event
+
+### Update Event
+
+### Get Events List
+
+### Get Events Details
+
+### Get Attachment Details
+
+### Delete Attachment
+
+### Get Attendees Details
+
 
 # Bugs/Contributing/Feature Request
 
