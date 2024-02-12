@@ -1,5 +1,7 @@
+// import { Moment } from 'moment-timezone';
 import {
 	IExecuteFunctions,
+	IHttpRequestOptions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
@@ -171,12 +173,19 @@ export class ZohoCalendar implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Time Zone',
+						name: 'timeZone',
+						type: 'string',
+						default: '={{ $now.format(\'z\') }}',
+						description: 'Whether it is an all day event',
+				  },
+					{
 						displayName: 'All Day Event?',
 						name: 'isAllDayEvent',
 						type: 'boolean',
 						default: false,
 						description: 'Whether it is an all day event',
-				},
+				  },
 					{
 						displayName: 'URL To Attached',
 						name: 'url',
@@ -266,20 +275,88 @@ export class ZohoCalendar implements INodeType {
 		const items = this.getInputData();
 
 		let item: INodeExecutionData;
-		let myString: string;
+		let calendarId: string;
+		let timeZone: string;
+		let eventTitle: string;
+		let startTime: string;
+		let endTime: string;
+
 
 		// Iterates over all input items and add the key "myString" with the
 		// value the parameter "myString" resolves to.
 		// (This could be a different value for each item in case it contains an expression)
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
-				myString = this.getNodeParameter('myString', itemIndex, '') as string;
+				calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+				timeZone = this.getNodeParameter('timeZone', itemIndex, 'America/New_York') as string;
+				eventTitle = this.getNodeParameter('eventTitle', itemIndex, '') as string;
+				startTime = this.getNodeParameter('startTime', itemIndex, '') as string;
+				endTime = this.getNodeParameter('endTime', itemIndex, '') as string;
+
+				// let startTimeNumber =  Date.parse(startTime);
+				// let startTimeConverted = new Date(startTimeNumber)
+				// let startTimeGMT = startTimeConverted.toUTCString()
+
+				// Then, require it in your script
+				const moment = require('moment-timezone');
+
+				// Parse the startTime considering it's in the specified timeZone
+				let timeInTimeZone = moment.tz(startTime, timeZone); //this is utc now
+
+				// let timeInUTC = timeInTimeZone.clone().utc();
+
+
 				item = items[itemIndex];
 
 
+				const body =
+				{
+					'eventdata': `{'dateandtime': {'timezone': '${timeZone}','start': '20240214T180000Z','end': '20240214T183000Z'},'title':'${eventTitle}',}`
+				};
 
-				item.json['myString'] = myString;
+
+			const query = new URLSearchParams(body);
+
+
+			// just to remind myself.....
+			// this just finially started working
+			// But there has to be a better way
+
+
+				const options: IHttpRequestOptions = {
+					url: 'https://calendar.zoho.com/api/v1/calendars/' + calendarId + '/events?' + query,
+					method: 'POST',
+					// body: URLSearchParams,
+					// qs: body,
+					// arrayFormat: 'comma',
+					// encoding: 'json',
+					// json: true,
+					// returnFullResponse: true,
+				};
+
+				// const response = await this.helpers.httpRequest(options);
+
+				const response = await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					'zohoCalendarOAuth2Api',
+					options,
+				);
+
+
+
+				item.json['success'] = true;
+				item.json['eventId'] = response.events[0].id;
+				item.json['startTime'] = startTime;
+
+				item.json['startTimeGMT'] = timeInTimeZone;
+				// item.json['startTimeNumber'] = startTimeNumber;
+
+				item.json['endTime'] = endTime;
+
+
+
 			} catch (error) {
+
 				// This node should never fail but we want to showcase how
 				// to handle errors.
 				if (this.continueOnFail()) {
