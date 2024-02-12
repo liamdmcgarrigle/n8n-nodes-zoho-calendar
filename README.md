@@ -1,47 +1,50 @@
 ![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
 
-# n8n-nodes-starter
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [Overview of Community Zoho Calendar n8n Node](#overview-of-community-zoho-calendar-n8n-node)
+- [If you want a custom node](#if-you-want-a-custom-node)
+- [Documentation](#documentation)
+	- [How to install](#how-to-install)
+	- [Create a New Credential in n8n](#create-a-new-credential-in-n8n)
+- [Bugs/Contributing/Feature Request](#bugscontributingfeature-request)
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+# Overview of Community Zoho Calendar n8n Node
+I created this node because an organization I am affiliated with uses Zoho software and I would like to make it easier for our users to automate with n8n. Also, many of my clients use Zoho products, so making a suit of Zoho nodes will help get them aboard the n8n train! Choo chooooo 🚂
+I will focus more on the documentation and readme after I am finished making the functionality of the actual node.
 
-## Prerequisites
+# If you want a custom node
+Please reach out to me using the info on [my GitHub page](https://github.com/liamdmcgarrigle).
+Nodes can be built for the community as well as privately just for one organization.
 
-You need the following installed on your development machine:
+# Documentation
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 16. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-	```
-	npm install n8n -g
-	```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+## How to install
+Currently, this node is under development and only possible to run in a development environment 
 
+## Create a New Credential in n8n 
 
-## Using this starter
+1. Go to create a new credential in n8n
+It is named "Zoho Calendar OAuth2 API"
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+2. Set up your Zoho OAuth Client
+   
+Go [here](https://api-console.zoho.com/) and create a "Server-based Application"
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-    ```
-    git clone https://github.com/<your organization>/<your-repo-name>.git
-    ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+In the homepage url field add your n8n instances url.
 
-## More information
+In the Authorized Redirect URIs field, add the redirect URI from the n8n credential page as well as `https://calendar.zoho.com/`
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+Then press the "Create" button
 
-## License
+3. Copy and Paste your client and secret ID into n8n's credential page
+   
+4. Press the Connect My Account button and agree to the popup
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+# Bugs/Contributing/Feature Request
+
+If you have a bug to report or a feature request, please [submit a GitHub issue](https://github.com/liamdmcgarrigle/n8n-nodes-zoho-calendar/issues/new) with as much detail as you're able to give.
+
+Feel free to submit PRs, but please get in touch with me first to make sure I am willing to add the feature before you spend the time on it.
+
