@@ -1,5 +1,6 @@
-// import { Moment } from 'moment-timezone';
+import * as moment from 'moment-timezone';
 import {
+	IDataObject,
 	IExecuteFunctions,
 	IHttpRequestOptions,
 	INodeExecutionData,
@@ -278,50 +279,26 @@ export class ZohoCalendar implements INodeType {
 		let calendarId: string;
 		let timeZone: string;
 		let eventTitle: string;
-		let startTime: string;
-		let endTime: string;
 
 
-		// Iterates over all input items and add the key "myString" with the
-		// value the parameter "myString" resolves to.
-		// (This could be a different value for each item in case it contains an expression)
+
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
 				calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-				timeZone = this.getNodeParameter('timeZone', itemIndex, 'America/New_York') as string;
+				const additionalFields = this.getNodeParameter('additionalFields', itemIndex) as IDataObject; // gets values under additionalFields
+				timeZone = additionalFields.timeZone as string;
 				eventTitle = this.getNodeParameter('eventTitle', itemIndex, '') as string;
-				startTime = this.getNodeParameter('startTime', itemIndex, '') as string;
-				endTime = this.getNodeParameter('endTime', itemIndex, '') as string;
-
-				// let startTimeNumber =  Date.parse(startTime);
-				// let startTimeConverted = new Date(startTimeNumber)
-				// let startTimeGMT = startTimeConverted.toUTCString()
-
-				// Then, require it in your script
-				const moment = require('moment-timezone');
-
-				// Parse the startTime considering it's in the specified timeZone
-				let timeInTimeZone = moment.tz(startTime, timeZone); //this is utc now
-
-				// let timeInUTC = timeInTimeZone.clone().utc();
-
+				let startTime = moment.tz(this.getNodeParameter('startTime', itemIndex, '') as string, timeZone);
+				let endTime = moment.tz(this.getNodeParameter('endTime', itemIndex, '') as string, timeZone);
 
 				item = items[itemIndex];
 
-
 				const body =
 				{
-					'eventdata': `{'dateandtime': {'timezone': '${timeZone}','start': '20240214T180000Z','end': '20240214T183000Z'},'title':'${eventTitle}',}`
+					'eventdata': `{'dateandtime': {'timezone': '${timeZone}','start': '${startTime.utc().format("YYYYMMDDTHHmmss") + 'Z'}','end': '${endTime.utc().format("YYYYMMDDTHHmmss") + 'Z'}'},'title':'${eventTitle}',}`
 				};
 
-
-			const query = new URLSearchParams(body);
-
-
-			// just to remind myself.....
-			// this just finially started working
-			// But there has to be a better way
-
+				const query = new URLSearchParams(body); // converts body to query params
 
 				const options: IHttpRequestOptions = {
 					url: 'https://calendar.zoho.com/api/v1/calendars/' + calendarId + '/events?' + query,
@@ -334,25 +311,14 @@ export class ZohoCalendar implements INodeType {
 					// returnFullResponse: true,
 				};
 
-				// const response = await this.helpers.httpRequest(options);
-
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
 					'zohoCalendarOAuth2Api',
 					options,
 				);
 
-
-
 				item.json['success'] = true;
 				item.json['eventId'] = response.events[0].id;
-				item.json['startTime'] = startTime;
-
-				item.json['startTimeGMT'] = timeInTimeZone;
-				// item.json['startTimeNumber'] = startTimeNumber;
-
-				item.json['endTime'] = endTime;
-
 
 
 			} catch (error) {
