@@ -9,6 +9,8 @@
 - [Documentation](#documentation)
 	- [How to install](#how-to-install)
 	- [Set Up Credentials](#set-up-credentials)
+	- [General](#general)
+		- [Get Calendar UID](#get-calendar-uid)
 	- [Event Actions](#event-actions)
 		- [Create an event](#create-an-event)
 			- [Create an event with an unknown number of attendees](#create-an-event-with-an-unknown-number-of-attendees)
@@ -62,6 +64,16 @@ Then press the "Create" button
 3. Copy and Paste your client and secret ID into n8n's credential page
    
 4. Press the Connect My Account button and agree to the popup
+
+
+## General
+
+### Get Calendar UID
+1. Go to your [Zoho Calendar homepage](https://calendar.zoho.com/) and go to settings (the gear icon)
+   
+2. Click on "My Calendars" on the right sidebar
+   
+3. Click on your desired calendar and scroll to the bottom. Your UID will be the last field on the page
 
 ## Event Actions
 

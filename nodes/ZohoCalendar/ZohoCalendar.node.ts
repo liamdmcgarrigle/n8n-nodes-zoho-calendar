@@ -36,12 +36,12 @@ export class ZohoCalendar implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Calendar',
-						value: 'calendar',
-					},
-					{
 						name: 'Event',
 						value: 'event',
+					},
+					{
+						name: 'Calendar',
+						value: 'calendar',
 					},
 				],
 				default: 'event',
@@ -91,16 +91,20 @@ export class ZohoCalendar implements INodeType {
 					},
 				],
 				default: 'createNewEvent',
-
+				displayOptions: {
+					show: {
+						resource: ['event',]
+					},
+				},
 			},
 			{
-				displayName: 'Calendar ID',
+				displayName: 'Calendar UID',
 				name: 'calendarId',
 				required: true,
 				type: 'string',
 				default: '',
-				placeholder: '8793u09048534kjhdb34t5334',
-				description: 'The ID of the calendar you want to add to. If static, get this from settings -> My Calendars then copy the ID from the share URLs on the bottom of the screen. If dynamic, add a search step before this node.',
+				placeholder: '79dc7305aede44d8e7874351d00f9641',
+				description: 'The UID of the calendar you want',
 				displayOptions: {
 					show: {
 						method: ['createNewEvent',]
@@ -222,8 +226,10 @@ export class ZohoCalendar implements INodeType {
 										displayName: 'Email',
 										name: 'email',
 										type: 'string',
+
 										default: '',
 										placeholder: 'name@email.com',
+
 										required: true,
 
 									},
