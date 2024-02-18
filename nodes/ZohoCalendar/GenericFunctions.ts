@@ -57,5 +57,25 @@ export function checkStartBeforeEnd (node: INode,  startTime: moment.Moment, end
 	return
 }
 
+/**
+ * Checks to ensure the start and end time exist
+ *
+ * Pass in the field values before they are converted to DateTime so this is what throws the error
+ *
+ * Pass in `this.getNode()` for the `node` parameter
+ *
+ */
+export function checkTimesExist (node: INode,  startTime: string, endTime: string, itemIndex: number ) {
+	if (startTime === '' || startTime === undefined || endTime === '' || endTime === undefined) {
+		const description = `The start time and end time are required`;
+		throw new NodeOperationError(node, 'Start time and/or end time is missing', {
+			description,
+			itemIndex,
+		});
+	}
+
+	return
+}
+
 
 

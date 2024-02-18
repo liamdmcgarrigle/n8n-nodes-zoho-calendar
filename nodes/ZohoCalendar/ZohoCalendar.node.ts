@@ -8,8 +8,8 @@ import {
 	INodeTypeDescription,
 	NodeOperationError,
 } from 'n8n-workflow';
-import { checkStartBeforeEnd, checkTimeZone, createEventRequest } from './GenericFunctions';
-import { eventOperations } from './EventDescription';
+import { checkStartBeforeEnd, checkTimeZone, checkTimesExist, createEventRequest } from './GenericFunctions';
+import { eventFields } from './EventDescription';
 
 export class ZohoCalendar implements INodeType {
 	description: INodeTypeDescription = {
@@ -49,7 +49,7 @@ export class ZohoCalendar implements INodeType {
 				],
 				default: 'event',
 			},
-			...eventOperations
+			...eventFields
 			]
 		};
 
@@ -72,6 +72,12 @@ export class ZohoCalendar implements INodeType {
 
 
 					if( this.getNodeParameter('method', 0) === 'createNewEvent' ) {
+						checkTimesExist(this.getNode(), this.getNodeParameter(
+							'startTime', itemIndex, '') as string,
+							this.getNodeParameter('endTime',
+							itemIndex, '') as string,
+							itemIndex,
+							)
 
 						calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 						// below comments are how to add fields from options
@@ -132,6 +138,12 @@ export class ZohoCalendar implements INodeType {
 
 				if( this.getNodeParameter('method', 0) === 'moveEvent' ) {
 					item.json['otherThing'] = true; // this runs code for moveEvent
+				}
+
+
+				if( this.getNodeParameter('method', 0) === 'getEventsList' ) {
+					// this runs code for getEventsList
+					// IMPORTANT: Throw error is range is over 31 days
 				}
 
 

@@ -1,7 +1,9 @@
 import { INodeProperties } from "n8n-workflow";
 
-export const eventOperations: INodeProperties[] = [
+export const eventFields: INodeProperties[] = [
 
+	// 					METHOD SELECTOR
+	// --------------------------------------
 	{
 		displayName: 'Method',
 		name: 'method',
@@ -53,6 +55,8 @@ export const eventOperations: INodeProperties[] = [
 			},
 		},
 	},
+	// 					SIMILAR FIELDS
+	// --------------------------------------
 	{
 		displayName: 'Calendar UID',
 		name: 'calendarId',
@@ -63,7 +67,40 @@ export const eventOperations: INodeProperties[] = [
 		description: 'The UID of the calendar you want',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'moveEvent',
+					'deleteEvent',
+					'updateEvent',
+					'getEventsList',
+					'getEventsDetails',
+					'getAttachmentDetails',
+					'deleteAttachment',
+					'getAttendeesDetails',
+				]
+			},
+		},
+	},
+	// Event uid for get event details
+	{
+		displayName: 'Event UID',
+		name: 'eventId',
+		required: true,
+		type: 'string',
+		default: '',
+		placeholder: '08cfc73476024a75a957c0524691a250@zoho.com',
+		description: 'The UID of the calendar you want',
+		displayOptions: {
+			show: {
+				method: [
+					'moveEvent',
+					'deleteEvent',
+					'updateEvent',
+					'getEventsDetails',
+					'getAttachmentDetails',
+					'deleteAttachment',
+					'getAttendeesDetails',
+				]
 			},
 		},
 	},
@@ -77,7 +114,24 @@ export const eventOperations: INodeProperties[] = [
 		description: 'Title of the event to be added',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+				]
+			},
+		},
+	},
+	{
+		displayName: 'Update Event Title',
+		name: 'updateEventTitle',
+		type: 'string',
+		default: '',
+		placeholder: 'My Really Cool Event',
+		description: 'Update title of event. Leave blank to keep original name.',
+		displayOptions: {
+			show: {
+				method: [
+					'updateEvent',
+				]
 			},
 		},
 	},
@@ -85,11 +139,14 @@ export const eventOperations: INodeProperties[] = [
 		displayName: 'Start Time',
 		name: 'startTime',
 		type: 'dateTime',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'moveEvent',
+					'updateEvent',
+				]
 			},
 		},
 	},
@@ -97,11 +154,46 @@ export const eventOperations: INodeProperties[] = [
 		displayName: 'End Time',
 		name: 'endTime',
 		type: 'dateTime',
-		required: true,
 		default: '',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'moveEvent',
+					'updateEvent',
+
+				]
+			},
+		},
+	},
+	// Range for get events search
+	{
+		displayName: 'Start Of Search Range',
+		name: 'startOfSearchRangeTime',
+		type: 'dateTime',
+		required: true,
+		description: 'Start DateTime for range to get calendar events from. Range must be under 31 days.',
+		default: '',
+		displayOptions: {
+			show: {
+				method: [
+					'getEventsList',
+				]
+			},
+		},
+	},
+	{
+		displayName: 'End Of Search Range',
+		name: 'endOfSearchRangeTime',
+		type: 'dateTime',
+		required: true,
+		description: 'End DateTime for range to get calendar events from. Range must be under 31 days.',
+		default: '',
+		displayOptions: {
+			show: {
+				method: [
+					'getEventsList',
+				]
 			},
 		},
 	},
@@ -111,10 +203,28 @@ export const eventOperations: INodeProperties[] = [
 		type: 'string',
 		default: '={{ $now.format(\'z\') }}',
 		required: true,
-		description: 'Whether it is an all day event',
+		description: 'The time zone of the event',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'getEventsList',
+				]
+			},
+		},
+	},
+	{
+		displayName: 'Time Zone',
+		name: 'timeZone',
+		type: 'string',
+		default: '',
+		description: 'The updated time zone of the event. Leave blank to keep the same.',
+		displayOptions: {
+			show: {
+				method: [
+					'moveEvent',
+					'updateEvent',
+				]
 			},
 		},
 	},
@@ -129,7 +239,10 @@ export const eventOperations: INodeProperties[] = [
 		placeholder: 'Liam\'s birthday party. Don\'t forget a gift.',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'updateEvent',
+				]
 			},
 		},
 	},
@@ -142,7 +255,10 @@ export const eventOperations: INodeProperties[] = [
 		placeholder: 'Add Field',
 		displayOptions: {
 			show: {
-				method: ['createNewEvent',]
+				method: [
+					'createNewEvent',
+					'updateEvent',
+				]
 			},
 		},
 		options: [
@@ -237,8 +353,51 @@ export const eventOperations: INodeProperties[] = [
 						],
 					},
 				],
+			},
 
+
+		],
+	},
+	// attachment id for get attachment details
+	{
+		displayName: 'Attachment ID',
+		name: 'attachmentId',
+		required: true,
+		type: 'string',
+		default: '',
+		placeholder: '08cfc73476024a75a957c0524691a250@zoho.com',
+		description: 'The ID of the attachement you want. Find the ID by using a \'Get Event Details\' node first.',
+		displayOptions: {
+			show: {
+				method: [
+					'getEventsDetails',
+				]
+			},
+		},
+	},
+	// get attachment details options
+	{
+		displayName: 'Attachment Options',
+		name: 'attachmentId',
+		required: true,
+		displayOptions: {
+			show: {
+				method: [
+					'getEventsDetails',
+				]
+			},
+		},
+		type: 'options',
+		options: [
+			{
+				name: 'Download',
+				value: 'download',
+			},
+			{
+				name: 'View URL',
+				value: 'viewUrl',
 			},
 		],
+		default: 'download',
 	},
 ]
