@@ -8,7 +8,15 @@ import {
 	INodeTypeDescription,
 	NodeOperationError,
 } from 'n8n-workflow';
-import {  attendeeObject, checkStartBeforeEnd, checkTimeZone, checkTimesExist, createEventRequest, updateEventRequest, } from './GenericFunctions';
+import {
+	attendeeObject,
+	checkStartBeforeEnd,
+	checkTimeZone,
+	checkTimesExist,
+	checkTimesOnDisableAllDay,
+	createEventRequest,
+	updateEventRequest,
+} from './GenericFunctions';
 import { eventFields } from './EventDescription';
 
 export class ZohoCalendar implements INodeType {
@@ -42,10 +50,10 @@ export class ZohoCalendar implements INodeType {
 						name: 'Event',
 						value: 'event',
 					},
-					{
-						name: 'Calendar',
-						value: 'calendar',
-					},
+					// {
+					// 	name: 'Calendar',
+					// 	value: 'calendar',
+					// },
 				],
 				default: 'event',
 			},
@@ -264,13 +272,23 @@ export class ZohoCalendar implements INodeType {
 					const endTime = endTimeRaw ? moment.tz(endTimeRaw, timeZone ? timeZone : existingTimeZone) : "";
 					const description = this.getNodeParameter('eventDescription',itemIndex, '') as string;
 
-					const existingStartTime = moment.tz(existingEvent.events[0].dateandtime.start.slice(0, -5), timeZone ? timeZone : existingTimeZone );
-					const existingEndTime = moment.tz(existingEvent.events[0].dateandtime.end.slice(0, -5), timeZone ? timeZone : existingTimeZone );
+					const existingIsAllDay: boolean = existingEvent.events[0].isallday;
+
+					let existingStartTime;
+					let existingEndTime;
+					if(existingIsAllDay){
+
+						existingStartTime = moment.tz(existingEvent.events[0].dateandtime.start, timeZone ? timeZone : existingTimeZone );
+						existingEndTime = moment.tz(existingEvent.events[0].dateandtime.end, timeZone ? timeZone : existingTimeZone );
+					} else {
+						existingStartTime = moment.tz(existingEvent.events[0].dateandtime.start.slice(0, -5), timeZone ? timeZone : existingTimeZone );
+						existingEndTime = moment.tz(existingEvent.events[0].dateandtime.end.slice(0, -5), timeZone ? timeZone : existingTimeZone );
+					}
 
 
 
 
-					const existingIsAllDay = existingEvent.events[0].isallday;
+
 
 					// Checks to make sure no start times happen before end times, even for the old values
 					if(startTime && endTime) {
@@ -283,7 +301,11 @@ export class ZohoCalendar implements INodeType {
 						checkStartBeforeEnd(this.getNode(), existingStartTime, endTime, itemIndex);
 					}
 
-					isAllDayEvent = isAllDayEvent !== null ? isAllDayEvent : existingIsAllDay;
+					checkTimesOnDisableAllDay(this.getNode(), existingIsAllDay, isAllDayEvent, startTimeRaw, endTimeRaw, itemIndex )
+
+					isAllDayEvent = isAllDayEvent !== undefined ? isAllDayEvent : existingIsAllDay;
+
+
 
 
 					let qsData: updateEventRequest = {

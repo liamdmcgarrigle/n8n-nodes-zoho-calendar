@@ -102,5 +102,24 @@ export function checkTimesExist (node: INode,  startTime: string, endTime: strin
 	return
 }
 
+/**
+ * Checks to ensure there is a time set is all day event is disabled
+ *
+ * When the all day event is set to false and no time is given, zoho returns an error since there is only date info and no time info.
+ *
+ * Pass in `this.getNode()` for the `node` parameter
+ */
+export function checkTimesOnDisableAllDay (node: INode, existingAllDayEvent: boolean, newAllDayEvent: boolean, startTime: string, endTime: string, itemIndex: number ) {
+	if (existingAllDayEvent && !newAllDayEvent && !startTime && !endTime) {
+		const description = `Zoho needs a time to set the start and end date. Since it is coming from an all day event, there is no time information.`;
+		throw new NodeOperationError(node, 'Must specify start and end time if changing from all day event to non-all day event.', {
+			description,
+			itemIndex,
+		});
+	}
+
+	return
+}
+
 
 
