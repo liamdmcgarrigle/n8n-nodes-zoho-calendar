@@ -16,7 +16,7 @@ export const eventFields: INodeProperties[] = [
 				value: 'createNewEvent',
 			},
 			{
-				name: 'Move Event',
+				name: 'Move Event To Other Calendar',
 				value: 'moveEvent',
 			},
 			{
@@ -104,6 +104,23 @@ export const eventFields: INodeProperties[] = [
 			},
 		},
 	},
+	// new calendar id
+	{
+		displayName: 'New Calendar UID',
+		name: 'newCalendarId',
+		required: true,
+		type: 'string',
+		default: '',
+		placeholder: '79dc7305aede44d8e7874351d00f9641',
+		description: 'The UID of the calendar you want to move the event to',
+		displayOptions: {
+			show: {
+				method: [
+					'moveEvent',
+				]
+			},
+		},
+	},
 	{
 		displayName: 'Event Title',
 		name: 'eventTitle',
@@ -144,8 +161,6 @@ export const eventFields: INodeProperties[] = [
 			show: {
 				method: [
 					'createNewEvent',
-					'moveEvent',
-					'updateEvent',
 				]
 			},
 		},
@@ -159,7 +174,34 @@ export const eventFields: INodeProperties[] = [
 			show: {
 				method: [
 					'createNewEvent',
-					'moveEvent',
+
+				]
+			},
+		},
+	},
+	{
+		displayName: 'Change Start Time',
+		name: 'startTime',
+		type: 'dateTime',
+		default: '',
+		description: 'Leave blank to keep the same start time',
+		displayOptions: {
+			show: {
+				method: [
+					'updateEvent',
+				]
+			},
+		},
+	},
+	{
+		displayName: 'Change End Time',
+		name: 'endTime',
+		type: 'dateTime',
+		default: '',
+		description: 'Leave blank to keep the same end time',
+		displayOptions: {
+			show: {
+				method: [
 					'updateEvent',
 
 				]
@@ -218,11 +260,10 @@ export const eventFields: INodeProperties[] = [
 		name: 'timeZone',
 		type: 'string',
 		default: '',
-		description: 'The updated time zone of the event. Leave blank to keep the same.',
+		description: 'The updated time zone of the event. Leave blank to keep the same. If changed without new time input, it will convert the currect event time to the new time zone.',
 		displayOptions: {
 			show: {
 				method: [
-					'moveEvent',
 					'updateEvent',
 				]
 			},
@@ -267,7 +308,7 @@ export const eventFields: INodeProperties[] = [
 				name: 'isAllDayEvent',
 				type: 'boolean',
 				default: false,
-				description: 'Whether it is an all day event',
+				description: 'Whether it is an all day event. If updating, an event can not be changed from a all day event to a nonall day event without specifying times, it will throw an error.',
 			},
 			{
 				displayName: 'Is Private?',

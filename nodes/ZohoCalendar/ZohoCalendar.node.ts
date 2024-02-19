@@ -8,7 +8,7 @@ import {
 	INodeTypeDescription,
 	NodeOperationError,
 } from 'n8n-workflow';
-import {  attendeeObject, checkStartBeforeEnd, checkTimeZone, checkTimesExist, createEventRequest } from './GenericFunctions';
+import {  attendeeObject, checkStartBeforeEnd, checkTimeZone, checkTimesExist, createEventRequest, updateEventRequest, } from './GenericFunctions';
 import { eventFields } from './EventDescription';
 
 export class ZohoCalendar implements INodeType {
@@ -18,7 +18,7 @@ export class ZohoCalendar implements INodeType {
 		icon: 'file:zohoCalendarLogo.svg',
 		group: ['input'],
 		version: 1,
-		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
+		subtitle: '={{$parameter["method"]}}',
 		description: 'Basic Node',
 		defaults: {
 			name: 'Zoho Calendar',
@@ -165,25 +165,51 @@ export class ZohoCalendar implements INodeType {
 				//
 				if( this.getNodeParameter('method', 0) === 'moveEvent' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-
-					// define query body
-					// let qsData: createEventRequest = {
-					// 	'thing':'thing'
-					// };
-
-					// define optional params
-					if('description') {
-						// qsData['description'] = description;
-					}
-
-					// pack body into required QS format
-					// const body = {'eventdata': JSON.stringify(qsData)};
+					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
+					const newCalendarId = this.getNodeParameter('newCalendarId', itemIndex,) as string;
 
 					// http call options
 					const options: IHttpRequestOptions = {
-						url: 'https://calendar.zoho.com/api/v1/calendars/' + calendarId + '/events?',
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}?destinationcaluid=${newCalendarId}`,
 						method: 'POST',
-						// qs: body,
+					};
+
+					// actuall http call
+					const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						options,
+					);
+
+					item.json['success'] = true;
+					item.json['zohoResponse'] = response;
+
+				}
+
+				//
+				// ---------- DELETE EVENT ----------
+				//
+				if( this.getNodeParameter('method', 0) === 'deleteEvent' ) {
+					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
+
+					const existingCallOptions: IHttpRequestOptions = {
+							url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+							method: 'GET',
+						};
+					const existingEvent = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'zohoCalendarOAuth2Api',
+							existingCallOptions,
+						);
+
+					const etag = existingEvent.events[0].etag;
+
+					// http call options
+					const options: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+						method: 'DELETE',
+						headers: {'etag': etag}
 					};
 
 					// actuall http call
@@ -200,59 +226,206 @@ export class ZohoCalendar implements INodeType {
 				}
 
 				//
-				// ---------- DELETE EVENT ----------
-				//
-				if( this.getNodeParameter('method', 0) === 'deleteEvent' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-
-					// define query body
-					// let qsData: createEventRequest = {
-						// 'thing':'thing'
-					// };
-
-					// define optional params
-					if('description') {
-						// qsData['description'] = description;
-					}
-
-					// pack body into required QS format
-					// const body = {'eventdata': JSON.stringify(qsData)};
-
-					// // http call options
-					// const options: IHttpRequestOptions = {
-					// 	url: 'https://calendar.zoho.com/api/v1/calendars/' + calendarId + '/events?',
-					// 	method: 'POST',
-					// 	qs: body,
-					// };
-
-					// actuall http call
-					// const response = await this.helpers.httpRequestWithAuthentication.call(
-					// 	this,
-					// 	'zohoCalendarOAuth2Api',
-					// 	options,
-					// );
-
-					// Return Data
-					item.json['success'] = true;
-					// item.json['zohoResponse'] = response;
-
-
-				}
-
-				//
 				// ---------- UPDATE EVENT ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'updateEvent' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					const additionalFields = this.getNodeParameter('additionalFields', itemIndex) as IDataObject; // gets values under additionalFields
+					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
+
+					// Get existing info
+					const existingCallOptions: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+						method: 'GET',
+					};
+					const existingEvent = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						existingCallOptions,
+					);
+
+					const existingTimeZone = existingEvent.events[0].dateandtime.timezone;
 
 
+
+					const isPrivate = additionalFields.isPrivate as boolean;
+					const color = additionalFields.color as string;
+					let isAllDayEvent = additionalFields.isAllDayEvent as boolean;
+					const location = additionalFields.location as string;
+					const freeBusy = additionalFields.freeBusy as number;
+					const attendees = additionalFields.attendees as IDataObject;
+					const attendeesValues = attendees?.attendeesValues as attendeeObject | undefined;
+					const url = additionalFields.url as string;
+					const timeZone = this.getNodeParameter('timeZone',itemIndex, '') as string;
+					const eventTitle = this.getNodeParameter('updateEventTitle',itemIndex, '') as string;
+					const startTimeRaw = this.getNodeParameter('startTime', itemIndex, '') as string;
+					const endTimeRaw = this.getNodeParameter('endTime', itemIndex, '') as string;
+					const startTime = startTimeRaw ? moment.tz(startTimeRaw, timeZone ? timeZone : existingTimeZone) : "";
+					const endTime = endTimeRaw ? moment.tz(endTimeRaw, timeZone ? timeZone : existingTimeZone) : "";
+					const description = this.getNodeParameter('eventDescription',itemIndex, '') as string;
+
+					const existingStartTime = moment.tz(existingEvent.events[0].dateandtime.start.slice(0, -5), timeZone ? timeZone : existingTimeZone );
+					const existingEndTime = moment.tz(existingEvent.events[0].dateandtime.end.slice(0, -5), timeZone ? timeZone : existingTimeZone );
+
+
+
+
+					const existingIsAllDay = existingEvent.events[0].isallday;
+
+					// Checks to make sure no start times happen before end times, even for the old values
+					if(startTime && endTime) {
+						checkStartBeforeEnd(this.getNode(), startTime, endTime, itemIndex);
+					}
+					if(startTime && !endTime) {
+						checkStartBeforeEnd(this.getNode(), startTime, existingEndTime, itemIndex);
+					}
+					if(!startTime && endTime) {
+						checkStartBeforeEnd(this.getNode(), existingStartTime, endTime, itemIndex);
+					}
+
+					isAllDayEvent = isAllDayEvent !== null ? isAllDayEvent : existingIsAllDay;
+
+
+					let qsData: updateEventRequest = {
+						dateandtime: {}
+					};
+
+					if(startTime || endTime || timeZone) {
+						qsData.dateandtime.timezone = timeZone ? timeZone : existingTimeZone;
+
+					}
+					if(startTime) {
+						qsData.dateandtime.start = isAllDayEvent ?
+							startTime.utc().format("YYYYMMDD") :
+							startTime.utc().format("YYYYMMDDTHHmmss") + 'Z';
+					} else {
+						qsData.dateandtime.start = isAllDayEvent ?
+							existingStartTime.utc().format("YYYYMMDD") :
+							existingStartTime.utc().format("YYYYMMDDTHHmmss") + 'Z';
+					}
+
+					if(endTime) {
+						qsData.dateandtime.end = isAllDayEvent ?
+							endTime.utc().format("YYYYMMDD") :
+							endTime.utc().format("YYYYMMDDTHHmmss") + 'Z';
+					} else {
+						qsData.dateandtime.end = isAllDayEvent ?
+							existingEndTime.utc().format("YYYYMMDD") :
+							existingEndTime.utc().format("YYYYMMDDTHHmmss") + 'Z';
+					}
+
+					if(eventTitle) {
+						qsData['title'] = eventTitle;
+					}
+
+					if(isAllDayEvent) {
+						qsData['isallday'] = isAllDayEvent;
+					}
+
+					if(description) {
+						qsData['description'] = description;
+					}
+
+					if(isPrivate) {
+						qsData['isprivate'] = true;
+					}
+
+					if(location) {
+						qsData['location'] = location;
+					}
+
+					if(color) {
+						qsData['color'] = color;
+					}
+
+					if(freeBusy) {
+						qsData['transparency'] = freeBusy;
+					}
+
+					if(attendeesValues !== undefined) {
+						qsData['attendees'] = attendeesValues;
+					}
+
+					if(url) {
+						qsData['url'] = url;
+					}
+
+					const body = {'eventdata': JSON.stringify(qsData)};
+
+
+					const options: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+						method: 'POST',
+						qs: body,
+					};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						options,
+					);
+
+					item.json['success'] = true;
+					item.json['zohoResponse'] = response;
+
+
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+
+// // actuall http call
+// const existingCallOptions: IHttpRequestOptions = {
+// 	url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+// 	method: 'GET',
+// };
+// const existingEvent = await this.helpers.httpRequestWithAuthentication.call(
+// 	this,
+// 	'zohoCalendarOAuth2Api',
+// 	existingCallOptions,
+// );
+// const existingStartTime = existingEvent.events[0].dateandtime.start;
+// const existingEndTime = existingEvent.events[0].dateandtime.end
+// const existingTimeZone = existingEvent.events[0].dateandtime.timezone;
+// const existingIsAllDay = existingEvent.events[0].isallday;
+
+
+// const startTime = moment.tz(existingStartTime.slice(0, -5), existingTimeZone );
+// const endTime = moment.tz(existingEndTime.slice(0, -5), existingTimeZone );
+
+// // define query body
+// let qsData: moveEventRequest = {
+// 	'dateandtime': {
+// 		'timezone': newTimeZone ? newTimeZone : existingTimeZone,
+// 		'start': existingIsAllDay ?
+// 			startTime.utc().format("YYYYMMDD") :
+// 			startTime.utc().format("YYYYMMDDTHHmmss") + 'Z',
+// 		'end': existingIsAllDay ?
+// 			endTime.utc().format("YYYYMMDD") :
+// 			endTime.utc().format("YYYYMMDDTHHmmss") + 'Z',
+// 	},
+// };
+
+// // pack body into required QS format
+// const body = {'eventdata': JSON.stringify(qsData)};
+
+// // http call options
+// const options: IHttpRequestOptions = {
+// 	url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+// 	method: 'POST',
+// 	qs: body,
+// };
+
+// // actuall http call
+// const response = await this.helpers.httpRequestWithAuthentication.call(
+// 	this,
+// 	'zohoCalendarOAuth2Api',
+// 	options,
+// );
 				}
 
 				//
 				// ---------- GET EVENTS LIST ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getEventsList' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
 
 					// this runs code for getEventsList
@@ -263,7 +436,7 @@ export class ZohoCalendar implements INodeType {
 				// ---------- GET EVENT DETAILS ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getEventsDetails' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
 
 				}
@@ -272,7 +445,7 @@ export class ZohoCalendar implements INodeType {
 				// ---------- GET ATTACHMENT DETAILS ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getAttachmentDetails' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
 
 				}
@@ -281,7 +454,7 @@ export class ZohoCalendar implements INodeType {
 				// ---------- DELETE ATTACHMENT ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'deleteAttachment' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
 
 				}
@@ -290,7 +463,7 @@ export class ZohoCalendar implements INodeType {
 				// ---------- GET ATTENDEES DETAILS ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getAttendeesDetails' ) {
-					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
 
 				}

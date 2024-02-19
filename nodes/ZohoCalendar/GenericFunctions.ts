@@ -22,7 +22,29 @@ export interface createEventRequest {
 	'color'?: string,
 	'transparency'?: number,
 	'url'?: string,
+};
 
+export interface moveEventRequest {
+	'destinationcaluid': string,
+};
+
+
+
+export interface updateEventRequest {
+	'dateandtime': {
+		'timezone'?: string,
+		'start'?: string,
+		'end'?: string,
+	},
+	"attendees"?: attendeeObject,
+	'title'?:string,
+	'isallday'?:boolean,
+	'isprivate'?:boolean,
+	'location'?:string,
+	'description'?:string
+	'color'?: string,
+	'transparency'?: number,
+	'url'?: string,
 };
 
 
