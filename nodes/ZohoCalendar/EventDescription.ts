@@ -293,6 +293,26 @@ export const eventFields: INodeProperties[] = [
 				description: 'Location of the event. Addresses and coordinates work.',
 			},
 			{
+				displayName: 'Color',
+				name: 'color',
+				type: 'color',
+				default: '',
+				placeholder: '',
+				description: 'The events color',
+			},
+			{
+				displayName: 'Show On Free/Busy Schedule',
+				name: 'freeBusy',
+				type: 'number',
+				typeOptions: {
+					maxValue: 1,
+					minValue: 0,
+					numberStepSize: 1,
+				},
+				default: '',
+				description: 'Whether the event gets added to the free/busy schedule. 0 = adds it | 1 = does not add it.',
+			},
+			{
 				displayName: 'Attendees',
 				name: 'attendees',
 				placeholder: 'Add attendees',
@@ -318,40 +338,9 @@ export const eventFields: INodeProperties[] = [
 								required: true,
 
 							},
-							{
-								displayName: 'Permission Level',
-								name: 'value',
-								type: 'number',
-								typeOptions: {
-									maxValue: 3,
-									minValue: 0,
-									numberStepSize: '',
-								},
-								default: 1,
-								description: 'The attendee\'s permission level. 0 = Guest | 1 = View | 2 = Invite | 3 = Edit.',
-							},
-							{
-								displayName: 'Attendence',
-								name: 'attendence',
-								type: 'number',
-								typeOptions: {
-									maxValue: 2,
-									minValue: 0,
-									numberStepSize: 1,
-								},
-								default: '',
-								description: 'The attendee\'s attendence. 0 = Non participant | 1 = Required participant | 2 = Optional participant.',
-							},
-							{
-								displayName: 'Zoho User ID',
-								name: 'zid',
-								type: 'string',
-								default: '',
-								placeholder: '6sdg654615dfgh8dfg61h5',
-								description: 'The ID of a Zoho User',
-							},
 						],
 					},
+
 				],
 			},
 

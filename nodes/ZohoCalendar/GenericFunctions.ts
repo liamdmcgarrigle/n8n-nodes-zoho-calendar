@@ -1,27 +1,31 @@
 import { INode, NodeOperationError } from "n8n-workflow";
 
 
+export interface attendeeObject {
+	"email":string,
+	"permission"?: number,
+	"attendence"?:number,
+	"zid"?:string
+ }
 export interface createEventRequest {
 	'dateandtime': {
 		'timezone': string,
 		'start': string,
 		'end': string,
 	},
-	"attendees"?:[
-		{
-		 "email":string,
-		 "permission": number,
-		 "attendence":number
-		 "zid":string
-		}
-	 ],
+	"attendees"?: attendeeObject,
 	'title':string,
 	'isallday':boolean,
 	'isprivate'?:boolean,
 	'location'?:string,
 	'description'?:string
-	'color'?: string
+	'color'?: string,
+	'transparency'?: number,
+	'url'?: string,
+
 };
+
+
 
 /**
  * Checks to ensure timezone exists and is formatted to match `America/New_York` (just checks is there is a `/` in the string.)
@@ -63,7 +67,6 @@ export function checkStartBeforeEnd (node: INode,  startTime: moment.Moment, end
  * Pass in the field values before they are converted to DateTime so this is what throws the error
  *
  * Pass in `this.getNode()` for the `node` parameter
- *
  */
 export function checkTimesExist (node: INode,  startTime: string, endTime: string, itemIndex: number ) {
 	if (startTime === '' || startTime === undefined || endTime === '' || endTime === undefined) {
