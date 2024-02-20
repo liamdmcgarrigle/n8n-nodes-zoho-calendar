@@ -12,6 +12,7 @@
 	- [Set Up Credentials](#set-up-credentials)
 	- [General](#general)
 		- [Get Calendar UID](#get-calendar-uid)
+		- [Get Event UID](#get-event-uid)
 	- [Event Actions](#event-actions)
 		- [Create an event](#create-an-event)
 			- [Create an event with an unknown number of attendees](#create-an-event-with-an-unknown-number-of-attendees)
@@ -50,9 +51,12 @@ Here are some things I am working on bringing to this node:
 # Documentation
 
 ## How to install
-Currently, this node is under development and only possible to run in a development environment.
+This can only be installed if you are self-hosted. 
 
-I will update this when it is published on npm and ready to use!
+1. In n8n, go to the settings
+2. On the bottom of the left sidebar, press "Community nodes"
+3. Press the Install button and add the package name `n8n-nodes-zoho-calendar`
+4. Check the box and press install. It should now be available for you to use in workflows
 
 ## Set Up Credentials
 
@@ -81,6 +85,14 @@ Then press the "Create" button
 2. Click on "My Calendars" on the right sidebar
    
 3. Click on your desired calendar and scroll to the bottom. Your UID will be the last field on the page
+
+### Get Event UID
+
+There is no obvious way to get an event's uid in Zoho's interface. 
+
+You can get it using the node the following ways:
+- Get it from the response when creating a new event
+- Get it from the response of get events list node with a search
 
 ## Event Actions
 
