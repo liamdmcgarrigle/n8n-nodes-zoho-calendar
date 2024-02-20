@@ -167,7 +167,7 @@ export class ZohoCalendar implements INodeType {
 						);
 
 						// item.json['success'] = true;
-						item.json = response;
+						item.json['zohoResponse'] = response;
 
 					}
 
@@ -192,7 +192,7 @@ export class ZohoCalendar implements INodeType {
 						options,
 					);
 
-					item.json['success'] = true;
+					// item.json['success'] = true;
 					item.json['zohoResponse'] = response;
 
 				}
@@ -232,7 +232,7 @@ export class ZohoCalendar implements INodeType {
 
 					// Return Data
 					// item.json['success'] = true;
-					item.json = response;
+					item.json['zohoResponse'] = response;
 
 				}
 
@@ -391,7 +391,7 @@ export class ZohoCalendar implements INodeType {
 					);
 
 					// item.json['success'] = true;
-					item.json = response;
+					item.json['zohoResponse'] = response;
 
 
 				}
@@ -439,7 +439,7 @@ export class ZohoCalendar implements INodeType {
 					);
 
 					// item.json['success'] = true;
-					item.json = response;
+					item.json['zohoResponse'] = response;
 
 
 				}
@@ -463,7 +463,7 @@ export class ZohoCalendar implements INodeType {
 					);
 
 					// item.json['success'] = true;
-					item.json = response;
+					item.json['zohoResponse'] = response;
 
 
 				}
@@ -496,11 +496,11 @@ export class ZohoCalendar implements INodeType {
 					const binaryData =  Buffer.from(response);
 
 					const binary: IBinaryKeyData = {};
-        		binary!['data'] = await this.helpers.prepareBinaryData(
+        			binary!['data'] = await this.helpers.prepareBinaryData(
 						binaryData,
-        );
+        			);
 
-				item.binary = binary;
+					item.binary = binary;
 
 
 				}
