@@ -1,15 +1,15 @@
 {
   "name": "n8n-nodes-zoho-calendar",
   "version": "0.1.0",
-  "description": "",
+  "description": "A community node for Zoho Calendar",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/liamdmcgarrigle/n8n-nodes-zoho-calendar",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Liam McGarrigle",
+    "email": "liam@mcgarrigle.co"
   },
   "repository": {
     "type": "git",

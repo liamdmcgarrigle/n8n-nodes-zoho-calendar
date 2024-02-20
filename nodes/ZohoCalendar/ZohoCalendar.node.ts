@@ -1,5 +1,6 @@
 import * as moment from 'moment-timezone';
 import {
+	IBinaryKeyData,
 	IDataObject,
 	IExecuteFunctions,
 	IHttpRequestOptions,
@@ -10,6 +11,8 @@ import {
 } from 'n8n-workflow';
 import {
 	attendeeObject,
+	checkLessThan31Days,
+	checkRequiredField,
 	checkStartBeforeEnd,
 	checkTimeZone,
 	checkTimesExist,
@@ -163,8 +166,8 @@ export class ZohoCalendar implements INodeType {
 							options,
 						);
 
-						item.json['success'] = true;
-						item.json['zohoResponse'] = response;
+						// item.json['success'] = true;
+						item.json = response;
 
 					}
 
@@ -228,8 +231,8 @@ export class ZohoCalendar implements INodeType {
 					);
 
 					// Return Data
-					item.json['success'] = true;
-					item.json['zohoResponse'] = response;
+					// item.json['success'] = true;
+					item.json = response;
 
 				}
 
@@ -387,109 +390,120 @@ export class ZohoCalendar implements INodeType {
 						options,
 					);
 
-					item.json['success'] = true;
-					item.json['zohoResponse'] = response;
+					// item.json['success'] = true;
+					item.json = response;
 
 
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-
-// // actuall http call
-// const existingCallOptions: IHttpRequestOptions = {
-// 	url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
-// 	method: 'GET',
-// };
-// const existingEvent = await this.helpers.httpRequestWithAuthentication.call(
-// 	this,
-// 	'zohoCalendarOAuth2Api',
-// 	existingCallOptions,
-// );
-// const existingStartTime = existingEvent.events[0].dateandtime.start;
-// const existingEndTime = existingEvent.events[0].dateandtime.end
-// const existingTimeZone = existingEvent.events[0].dateandtime.timezone;
-// const existingIsAllDay = existingEvent.events[0].isallday;
-
-
-// const startTime = moment.tz(existingStartTime.slice(0, -5), existingTimeZone );
-// const endTime = moment.tz(existingEndTime.slice(0, -5), existingTimeZone );
-
-// // define query body
-// let qsData: moveEventRequest = {
-// 	'dateandtime': {
-// 		'timezone': newTimeZone ? newTimeZone : existingTimeZone,
-// 		'start': existingIsAllDay ?
-// 			startTime.utc().format("YYYYMMDD") :
-// 			startTime.utc().format("YYYYMMDDTHHmmss") + 'Z',
-// 		'end': existingIsAllDay ?
-// 			endTime.utc().format("YYYYMMDD") :
-// 			endTime.utc().format("YYYYMMDDTHHmmss") + 'Z',
-// 	},
-// };
-
-// // pack body into required QS format
-// const body = {'eventdata': JSON.stringify(qsData)};
-
-// // http call options
-// const options: IHttpRequestOptions = {
-// 	url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
-// 	method: 'POST',
-// 	qs: body,
-// };
-
-// // actuall http call
-// const response = await this.helpers.httpRequestWithAuthentication.call(
-// 	this,
-// 	'zohoCalendarOAuth2Api',
-// 	options,
-// );
 				}
 
 				//
 				// ---------- GET EVENTS LIST ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getEventsList' ) {
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					let timeZone = this.getNodeParameter('timeZone', itemIndex, '') as string;
+					const rawStartTime = this.getNodeParameter('startOfSearchRangeTime', itemIndex, '') as string;
+					const rawEndTime = this.getNodeParameter('endOfSearchRangeTime', itemIndex, '') as string;
+
+					checkRequiredField(this.getNode(), rawStartTime, "Start Of Search Range", itemIndex);
+					checkRequiredField(this.getNode(), rawEndTime, "End Of Search Range", itemIndex);
+
+					const startTime = moment.tz(rawStartTime, timeZone ? timeZone : 'Etc/GMT' );
+					const endTime = moment.tz(rawEndTime, timeZone ? timeZone : 'Etc/GMT' );
+
+					checkRequiredField(this.getNode(), startTime, "Start Of Search Range", itemIndex);
+					checkRequiredField(this.getNode(), endTime, "End Of Search Range", itemIndex);
+					checkLessThan31Days(this.getNode(), startTime, endTime, itemIndex);
+
+					timeZone ? timeZone : timeZone = 'Etc/GMT';
+
+					const qsData = {
+						"start": startTime.utc().format("YYYYMMDDTHHmmss") + 'Z',
+						"end": endTime.utc().format("YYYYMMDDTHHmmss") + 'Z'
+					}
 
 
-					// this runs code for getEventsList
-					// IMPORTANT: Throw error is range is over 31 days
+					const body = {'range': JSON.stringify(qsData), 'timezone':timeZone};
+
+
+					const options: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events`,
+						method: 'GET',
+						qs: body,
+					};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						options,
+					);
+
+					// item.json['success'] = true;
+					item.json = response;
+
+
 				}
 
 				//
 				// ---------- GET EVENT DETAILS ----------
 				//
 				if( this.getNodeParameter('method', 0) === 'getEventsDetails' ) {
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
+					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+
+					const options: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}`,
+						method: 'GET',
+					};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						options,
+					);
+
+					// item.json['success'] = true;
+					item.json = response;
 
 
 				}
 
 				//
-				// ---------- GET ATTACHMENT DETAILS ----------
+				// ---------- DOWNLOAD ATTACHMENT ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'getAttachmentDetails' ) {
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+				if( this.getNodeParameter('method', 0) === 'downloadAttachment' ) {
+					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
+					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
+					const fileid = this.getNodeParameter('attachmentId', itemIndex, '') as string;
+
+					checkRequiredField(this.getNode(), fileid, "File ID", itemIndex);
+					checkRequiredField(this.getNode(), eventId, "Event UID", itemIndex);
+					checkRequiredField(this.getNode(), calendarId, "Calendar UID", itemIndex);
+
+
+					const options: IHttpRequestOptions = {
+						url: `https://calendar.zoho.com/api/v1/calendars/${calendarId}/events/${eventId}/attachment/${fileid}?apimode=download`,
+						method: 'GET',
+						encoding: 'arraybuffer',
+					};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'zohoCalendarOAuth2Api',
+						options,
+					);
+
+					const binaryData =  Buffer.from(response);
+
+					const binary: IBinaryKeyData = {};
+        		binary!['data'] = await this.helpers.prepareBinaryData(
+						binaryData,
+        );
+
+				item.binary = binary;
 
 
 				}
-
-				//
-				// ---------- DELETE ATTACHMENT ----------
-				//
-				if( this.getNodeParameter('method', 0) === 'deleteAttachment' ) {
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-
-
-				}
-
-				//
-				// ---------- GET ATTENDEES DETAILS ----------
-				//
-				if( this.getNodeParameter('method', 0) === 'getAttendeesDetails' ) {
-					// const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
-
-
-				}
-
 
 			}
 

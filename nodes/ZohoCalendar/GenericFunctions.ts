@@ -121,5 +121,40 @@ export function checkTimesOnDisableAllDay (node: INode, existingAllDayEvent: boo
 	return
 }
 
+/**
+ * Checks to ensure there is not more than 31 days in the range
+ *
+ * Pass in `this.getNode()` for the `node` parameter
+ */
+export function checkLessThan31Days (node: INode, startTime: moment.Moment, endTime: moment.Moment, itemIndex: number ) {
+	if (endTime.diff(startTime, "days", true) > 31 ) {
+		const description = `Change the dates to make the range less than 31 days.`;
+		throw new NodeOperationError(node, 'The time range must be under 31 days.', {
+			description,
+			itemIndex,
+		});
+	}
 
+	return
+}
 
+/**
+ * Checks to ensure a required field is defined
+ *
+ * Pass in `this.getNode()` for the `node` parameter
+ *
+ * `field` is the field to check
+ *
+ * `fieldTitle` is the label to use in the error
+ */
+export function checkRequiredField (node: INode, field: any, fieldTitle: string, itemIndex: number ) {
+	if (field === '' || field === undefined) {
+		const description = `The field "${fieldTitle}" is required.`;
+		throw new NodeOperationError(node, 'Missing Required Field.', {
+			description,
+			itemIndex,
+		});
+	}
+
+	return
+}

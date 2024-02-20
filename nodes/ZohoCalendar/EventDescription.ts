@@ -5,7 +5,7 @@ export const eventFields: INodeProperties[] = [
 	// 					METHOD SELECTOR
 	// --------------------------------------
 	{
-		displayName: 'Method',
+		displayName: 'Operation',
 		name: 'method',
 		type: 'options',
 		noDataExpression: true,
@@ -36,16 +36,8 @@ export const eventFields: INodeProperties[] = [
 				value: 'getEventsDetails',
 			},
 			{
-				name: 'Get Attachment Details',
-				value: 'getAttachmentDetails',
-			},
-			{
-				name: 'Delete Attachment',
-				value: 'deleteAttachment',
-			},
-			{
-				name: 'Get Attendees Details',
-				value: 'getAttendeesDetails',
+				name: 'Download Attachment',
+				value: 'downloadAttachment',
 			},
 		],
 		default: 'createNewEvent',
@@ -74,8 +66,7 @@ export const eventFields: INodeProperties[] = [
 					'updateEvent',
 					'getEventsList',
 					'getEventsDetails',
-					'getAttachmentDetails',
-					'deleteAttachment',
+					'downloadAttachment',
 					'getAttendeesDetails',
 				]
 			},
@@ -97,8 +88,7 @@ export const eventFields: INodeProperties[] = [
 					'deleteEvent',
 					'updateEvent',
 					'getEventsDetails',
-					'getAttachmentDetails',
-					'deleteAttachment',
+					'downloadAttachment',
 					'getAttendeesDetails',
 				]
 			},
@@ -390,7 +380,7 @@ export const eventFields: INodeProperties[] = [
 	},
 	// attachment id for get attachment details
 	{
-		displayName: 'Attachment ID',
+		displayName: 'File ID',
 		name: 'attachmentId',
 		required: true,
 		type: 'string',
@@ -400,34 +390,9 @@ export const eventFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				method: [
-					'getEventsDetails',
+					'downloadAttachment',
 				]
 			},
 		},
-	},
-	// get attachment details options
-	{
-		displayName: 'Attachment Options',
-		name: 'attachmentId',
-		required: true,
-		displayOptions: {
-			show: {
-				method: [
-					'getEventsDetails',
-				]
-			},
-		},
-		type: 'options',
-		options: [
-			{
-				name: 'Download',
-				value: 'download',
-			},
-			{
-				name: 'View URL',
-				value: 'viewUrl',
-			},
-		],
-		default: 'download',
 	},
 ]

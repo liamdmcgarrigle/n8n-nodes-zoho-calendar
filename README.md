@@ -6,6 +6,7 @@
 - [Overview of Community Zoho Calendar n8n Node](#overview-of-community-zoho-calendar-n8n-node)
 - [If you want a custom node](#if-you-want-a-custom-node)
 - [Bugs/Contributing/Feature Request](#bugscontributingfeature-request)
+- [Roadmap](#roadmap)
 - [Documentation](#documentation)
 	- [How to install](#how-to-install)
 	- [Set Up Credentials](#set-up-credentials)
@@ -19,9 +20,7 @@
 		- [Update Event](#update-event)
 		- [Get Events List](#get-events-list)
 		- [Get Events Details](#get-events-details)
-		- [Get Attachment Details](#get-attachment-details)
-		- [Delete Attachment](#delete-attachment)
-		- [Get Attendees Details](#get-attendees-details)
+		- [Download Attachment](#download-attachment)
 
 # Overview of Community Zoho Calendar n8n Node
 I created this node because an organization I am affiliated with uses Zoho software and I would like to make it easier for our users to automate with n8n.  \
@@ -39,6 +38,14 @@ Nodes can be built for the community as well as privately just for one organizat
 If you have a bug to report or a feature request, please [submit a GitHub issue](https://github.com/liamdmcgarrigle/n8n-nodes-zoho-calendar/issues/new) with as much detail as you're able to give.
 
 Feel free to submit PRs, but please get in touch with me first to make sure I am willing to add the feature before you spend the time on it.
+
+# Roadmap
+Here are some things I am working on bringing to this node:
+
+1. Ability to upload attachments with create and update operation
+2. Ability to delete attachments with update operation
+3. Create Calendar operations (such as list calendars and get calendar details)
+4. Clean up code and project files
 
 # Documentation
 
@@ -89,12 +96,23 @@ Add a link here to a template showing how to do this using a custom loop
 ### Update Event
 
 ### Get Events List
+**Search Results Ordering:**  \
+Search results are ordered chronologically, with earlier events appearing first (e.g., the event at index 0 precedes the event at index 1).
+
+Date Range Limitation:
+The search range must not exceed 31 days to ensure efficient query performance and manageable result sizes.
+
+**Time Zone Handling:**  \
+Default Time Zone: In the absence of a specified time zone, all times will default to Coordinated Universal Time (UTC).
+Impact on Searches: The specified time zone affects both the search criteria and the formatting of times in the search results. The times displayed in the results will align with the time zone used in the search query.
+
+**Event Inclusion Criteria:**  \
+An event is included in the search results if it occurs at any point within the specified search period, with one exception related to exact end times:
+
+Events Ending at the Search Start Time: An event that concludes precisely at the search period's start time will not be included in the results. For example, an event ending at 4:00pm will not appear in the results if the search begins at 4:00pm. However, adjusting the search start to even a second earlier (e.g., 3:59:59pm) will include the event in the results.
+
 
 ### Get Events Details
 
-### Get Attachment Details
 
-### Delete Attachment
-
-### Get Attendees Details
-
+### Download Attachment
