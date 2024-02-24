@@ -1,43 +1,55 @@
 import { INodeProperties } from "n8n-workflow";
 
-export const eventFields: INodeProperties[] = [
+export const eventOperations: INodeProperties[] = [
 
 	// 					METHOD SELECTOR
 	// --------------------------------------
 	{
 		displayName: 'Operation',
-		name: 'method',
+		name: 'operation',
 		type: 'options',
 		noDataExpression: true,
 		// eslint-disable-next-line n8n-nodes-base/node-param-options-type-unsorted-items
 		options: [
 			{
-				name: 'Create New Event',
+				name: 'Create Event',
 				value: 'createNewEvent',
+				action: 'Create new event',
+				description: 'Add an event to calendar',
+
 			},
 			{
-				name: 'Move Event To Other Calendar',
+				name: 'Move Event',
 				value: 'moveEvent',
+				action: 'Move event',
+				description: 'Move an event To another calendar',
 			},
 			{
 				name: 'Delete Event',
 				value: 'deleteEvent',
+				action: 'Delete event',
 			},
 			{
 				name: 'Update Event',
 				value: 'updateEvent',
+				action: 'Update event',
 			},
 			{
 				name: 'Get Events List',
 				value: 'getEventsList',
+				action: 'Get events',
+				description: 'Gets list of events within specified range',
 			},
 			{
 				name: 'Get Events Details',
 				value: 'getEventsDetails',
+				action: 'Get event details',
+				description: 'Get details for one specific event',
 			},
 			{
 				name: 'Download Attachment',
 				value: 'downloadAttachment',
+				action: 'Download attachment',
 			},
 		],
 		default: 'createNewEvent',
@@ -47,6 +59,9 @@ export const eventFields: INodeProperties[] = [
 			},
 		},
 	},
+]
+
+export const eventFields: INodeProperties[] = [
 	// 					SIMILAR FIELDS
 	// --------------------------------------
 	{
@@ -59,7 +74,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The UID of the calendar you want',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 					'moveEvent',
 					'deleteEvent',
@@ -83,7 +98,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The UID of the calendar you want',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'moveEvent',
 					'deleteEvent',
 					'updateEvent',
@@ -105,7 +120,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The UID of the calendar you want to move the event to',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'moveEvent',
 				]
 			},
@@ -121,7 +136,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'Title of the event to be added',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 				]
 			},
@@ -136,7 +151,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'Update title of event. Leave blank to keep original name.',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'updateEvent',
 				]
 			},
@@ -149,7 +164,7 @@ export const eventFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 				]
 			},
@@ -162,7 +177,7 @@ export const eventFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 
 				]
@@ -177,7 +192,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'Leave blank to keep the same start time',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'updateEvent',
 				]
 			},
@@ -191,7 +206,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'Leave blank to keep the same end time',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'updateEvent',
 
 				]
@@ -208,7 +223,7 @@ export const eventFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'getEventsList',
 				]
 			},
@@ -223,7 +238,7 @@ export const eventFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'getEventsList',
 				]
 			},
@@ -238,7 +253,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The time zone of the event',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 					'getEventsList',
 				]
@@ -253,7 +268,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The updated time zone of the event. Leave blank to keep the same. If changed without new time input, it will convert the currect event time to the new time zone.',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'updateEvent',
 				]
 			},
@@ -270,7 +285,7 @@ export const eventFields: INodeProperties[] = [
 		placeholder: 'Liam\'s birthday party. Don\'t forget a gift.',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 					'updateEvent',
 				]
@@ -286,7 +301,7 @@ export const eventFields: INodeProperties[] = [
 		placeholder: 'Add Field',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'createNewEvent',
 					'updateEvent',
 				]
@@ -389,7 +404,7 @@ export const eventFields: INodeProperties[] = [
 		description: 'The ID of the attachement you want. Find the ID by using a \'Get Event Details\' node first.',
 		displayOptions: {
 			show: {
-				method: [
+				operation: [
 					'downloadAttachment',
 				]
 			},

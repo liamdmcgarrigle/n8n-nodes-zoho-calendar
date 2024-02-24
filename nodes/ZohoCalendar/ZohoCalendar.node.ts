@@ -20,7 +20,7 @@ import {
 	createEventRequest,
 	updateEventRequest,
 } from './GenericFunctions';
-import { eventFields } from './EventDescription';
+import { eventOperations, eventFields } from './EventDescription';
 
 export class ZohoCalendar implements INodeType {
 	description: INodeTypeDescription = {
@@ -29,7 +29,7 @@ export class ZohoCalendar implements INodeType {
 		icon: 'file:zohoCalendarLogo.svg',
 		group: ['input'],
 		version: 1,
-		subtitle: '={{$parameter["method"]}}',
+		subtitle: '={{$parameter["operation"]}}',
 		description: 'Basic Node',
 		defaults: {
 			name: 'Zoho Calendar',
@@ -60,6 +60,7 @@ export class ZohoCalendar implements INodeType {
 				],
 				default: 'event',
 			},
+			...eventOperations,
 			...eventFields
 			]
 		};
@@ -79,7 +80,7 @@ export class ZohoCalendar implements INodeType {
 					//
 					// ---------- CREATE NEW EVENT ----------
 					//
-					if( this.getNodeParameter('method', 0) === 'createNewEvent' ) {
+					if( this.getNodeParameter('operation', 0) === 'createNewEvent' ) {
 						checkTimesExist(this.getNode(), this.getNodeParameter(
 							'startTime', itemIndex, '') as string,
 							this.getNodeParameter('endTime',
@@ -169,12 +170,13 @@ export class ZohoCalendar implements INodeType {
 						// item.json['success'] = true;
 						item.json['zohoResponse'] = response;
 
+
 					}
 
 				//
 				// ---------- MOVE EVENT ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'moveEvent' ) {
+				if( this.getNodeParameter('operation', 0) === 'moveEvent' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
 					const newCalendarId = this.getNodeParameter('newCalendarId', itemIndex,) as string;
@@ -200,7 +202,7 @@ export class ZohoCalendar implements INodeType {
 				//
 				// ---------- DELETE EVENT ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'deleteEvent' ) {
+				if( this.getNodeParameter('operation', 0) === 'deleteEvent' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
 
@@ -239,7 +241,7 @@ export class ZohoCalendar implements INodeType {
 				//
 				// ---------- UPDATE EVENT ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'updateEvent' ) {
+				if( this.getNodeParameter('operation', 0) === 'updateEvent' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 					const additionalFields = this.getNodeParameter('additionalFields', itemIndex) as IDataObject; // gets values under additionalFields
 					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
@@ -399,7 +401,7 @@ export class ZohoCalendar implements INodeType {
 				//
 				// ---------- GET EVENTS LIST ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'getEventsList' ) {
+				if( this.getNodeParameter('operation', 0) === 'getEventsList' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 					let timeZone = this.getNodeParameter('timeZone', itemIndex, '') as string;
 					const rawStartTime = this.getNodeParameter('startOfSearchRangeTime', itemIndex, '') as string;
@@ -447,7 +449,7 @@ export class ZohoCalendar implements INodeType {
 				//
 				// ---------- GET EVENT DETAILS ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'getEventsDetails' ) {
+				if( this.getNodeParameter('operation', 0) === 'getEventsDetails' ) {
 					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 
@@ -471,7 +473,7 @@ export class ZohoCalendar implements INodeType {
 				//
 				// ---------- DOWNLOAD ATTACHMENT ----------
 				//
-				if( this.getNodeParameter('method', 0) === 'downloadAttachment' ) {
+				if( this.getNodeParameter('operation', 0) === 'downloadAttachment' ) {
 					const calendarId = this.getNodeParameter('calendarId', itemIndex, '') as string;
 					const eventId = this.getNodeParameter('eventId', itemIndex, '') as string;
 					const fileid = this.getNodeParameter('attachmentId', itemIndex, '') as string;
