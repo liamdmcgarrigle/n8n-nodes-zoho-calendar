@@ -53,10 +53,6 @@ export class ZohoCalendar implements INodeType {
 						name: 'Event',
 						value: 'event',
 					},
-					// {
-					// 	name: 'Calendar',
-					// 	value: 'calendar',
-					// },
 				],
 				default: 'event',
 			},
@@ -102,8 +98,7 @@ export class ZohoCalendar implements INodeType {
 						const eventTitle = this.getNodeParameter('eventTitle',itemIndex, '') as string;
 						const startTime = moment.tz(this.getNodeParameter('startTime', itemIndex, '') as string, timeZone );
 						const endTime = moment.tz(this.getNodeParameter('endTime', itemIndex, '') as string, timeZone );
-						const description = this.getNodeParameter('eventDescription',itemIndex, '') as string;
-
+						const description = (this.getNodeParameter('eventDescription',itemIndex, '') as string).replace(/<br>/g, "\n");
 
 
 						checkTimeZone(this.getNode(), timeZone, itemIndex);
@@ -152,7 +147,9 @@ export class ZohoCalendar implements INodeType {
 							qsData['url'] = url;
 						}
 
+						// const body = {'eventdata': `{"dateandtime":{"timezone":"America/New_York","start":"20240229T150000Z","end":"20240229T160000Z"},"title":"titlllle","description":"${description}"}`};
 						const body = {'eventdata': JSON.stringify(qsData)};
+						console.log(body);
 
 
 						const options: IHttpRequestOptions = {
@@ -275,7 +272,7 @@ export class ZohoCalendar implements INodeType {
 					const endTimeRaw = this.getNodeParameter('endTime', itemIndex, '') as string;
 					const startTime = startTimeRaw ? moment.tz(startTimeRaw, timeZone ? timeZone : existingTimeZone) : "";
 					const endTime = endTimeRaw ? moment.tz(endTimeRaw, timeZone ? timeZone : existingTimeZone) : "";
-					const description = this.getNodeParameter('eventDescription',itemIndex, '') as string;
+					const description = (this.getNodeParameter('eventDescription',itemIndex, '') as string).replace(/<br>/g, "\n");
 
 					const existingIsAllDay: boolean = existingEvent.events[0].isallday;
 

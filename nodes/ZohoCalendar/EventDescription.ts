@@ -282,7 +282,8 @@ export const eventFields: INodeProperties[] = [
 			rows: 4,
 		},
 		default: '',
-		placeholder: 'Liam\'s birthday party. Don\'t forget a gift.',
+		description: 'Use a the html line break tag for line breaks',
+		placeholder: 'Liam\'s birthday party. <br>Don\'t forget a gift.',
 		displayOptions: {
 			show: {
 				operation: [
