@@ -30,7 +30,7 @@ export class ZohoCalendar implements INodeType {
 		group: ['input'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
-		description: 'Basic Node',
+		description: 'Community Node for Zoho Calendar',
 		defaults: {
 			name: 'Zoho Calendar',
 		},
